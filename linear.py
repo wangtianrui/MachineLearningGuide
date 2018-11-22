@@ -6,6 +6,7 @@ from models import Multinomial
 from models import Sin
 from models import Net
 from models import Three
+from models import Stero
 
 
 def readData():
@@ -57,9 +58,13 @@ def net(X, y_true):
 
 def three(X, y_true):
     model = Three()
-    model.train(X, y_true, 500000, 10, 1e-5)
+    model.train(X, y_true, 500000, 5, 1e-7)
     model.drawer(X, y_true)
 
+def stero(X, y_true):
+    model = Stero()
+    model.train(X, y_true, 500000, 20, 1e-3)
+    model.drawer(X, y_true)
 
 
 if __name__ == "__main__":
@@ -71,4 +76,5 @@ if __name__ == "__main__":
     # multinomial(X, number_data)
     # sin(X, number_data)
     # net(X, number_data)
-    three(X, number_data)
+    # three(X, number_data)
+    stero(X, number_data)
