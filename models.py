@@ -354,28 +354,91 @@ class Stero:
 
 class lwlr:
 
-    def __init__(self, k):
-        self.k = k
+    def __init__(self):
         self.weights = []
         self.predict_points = []
 
-    def predict(self, testpoint, X, y):
+    # def predict(self, testpoint, X, y):
+    #
+    #     X_ = np.array(X)
+    #     y = np.array(y)
+    #     X_ = X_
+    #     y = y
+    #     X = []
+    #     length = len(X_)
+    #
+    #     for i in range(length):
+    #         x_temp = X_[i]
+    #         y_temp = y[i]
+    #         X.append([x_temp, y_temp])
+    #     X = np.array(X)
+    #
+    #     weight = np.eye(length)
+    #     for j in range(length):
+    #         diff = testpoint - X[j]
+    #         weight[j, j] = np.exp(np.sum(diff ** 2) / (-2.0 * self.k ** 2))
+    #
+    #     # print(X.shape, weight.shape, y.shape)
+    #     xWx = np.dot(X.T, weight).dot(X)
+    #     xWy = np.dot(X.T, weight).dot(y)
+    #     try:
+    #         theta = np.linalg.inv(xWx).dot(xWy)
+    #     except np.linalg.LinAlgError:
+    #         return
+    #     print(theta)
+    #     self.predict_points.append(testpoint * theta)
 
+    # def predict(self, testpoint, featureArr, labelArr, k=1.0):
+    #     feature = np.mat(featureArr)
+    #     label = np.mat(labelArr).T
+    #     num_sample = np.size(label)  # 确定样本的个数
+    #
+    #     weight = np.mat(np.eye(num_sample))  # 初始化权重矩阵
+    #
+    #     # 确定权重
+    #     for i in range(num_sample):
+    #         diffMat = testpoint - feature[i, :]
+    #         weight[i, i] = np.exp((diffMat * diffMat.T) / (-2 * k ** 2))
+    #     xTwx = feature.T * weight * feature
+    #
+    #     if np.linalg.det(xTwx) == 0.0:
+    #         print("This matrix is singular, cannot do inverse")
+    #         return
+    #     theta = xTwx.I * feature.T * weight * label
+    #
+    #     return theta
+
+    def predict(self, testpoint, X, y, k):
         X = np.array(X)
         y = np.array(y)
 
-        length = len(X)
+        size = len(X)
+        weight = np.eye(size)
 
-        if len(X[0]) == 1:
-            for i in range(length):
-                X[i] = [i + 1, X[i]]
+        for i in range(size):
+            diff = X[i] - testpoint
+            weight[i, i] = np.exp(diff ** 2 / (-2 * k ** 2))
+        xWx = X.dot(weight).dot(X.T)
 
-        print(X.shape)
-        weight = np.eye(length)
-        for j in range(length):
-            diff = X[j] - testpoint
-            weight[j, j] = np.exp(np.dot(diff, diff.T) / (-2.0 * self.k ** 2))
+        if xWx == 0.0:
+            print("This matrix is singular, cannot do inverse")
+            print(testpoint)
+            return
+        theta = ((1.0 / xWx) * X).dot(weight).dot(y.T)
 
-        xWx = np.dot(X.T, weight).dot(X)
-        xWy = np.dot(X.T)
-        thetas = np.linalg.inv(xWx).dot()
+        print(theta)
+        return theta
+
+    def drawer(self, X, y, predicts):
+        # X = [x[1] for x in X]
+        y_pre = np.array(predicts)
+        plt.scatter(X, y)
+        print(y_pre)
+        plt.plot(X, y_pre.flatten())
+        plt.show()
+
+
+class Bayes:
+    def __init__(self):
+        self.p0vec = []
+        self.p1vec = []
