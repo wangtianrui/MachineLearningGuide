@@ -120,127 +120,6 @@ class Multinomial:
             self.log_weight -= d_log_weight
             self.log_a -= d_log_a
             self.log_b -= d_log_b
-            # print(d_log_a,d_log_b,d_log_weight)
-
-            # print("d_gama:%d" % (d_gama))
-
-
-class Sin:
-    """
-     y = wx + b
-    """
-
-    def __init__(self):
-        self.weight = 1.0
-        self.bias = 1.0
-        self.x_a = 1.0
-        self.x_b = 1.0
-        self.losses = []
-
-    def predict(self, x):
-        return self.weight * np.sin(self.x_a * x + self.x_b) + self.bias
-
-    def loss(self, X, y_true):
-        y_pre = self.predict(X)
-        loss = np.sum((y_true - y_pre) ** 2)
-        return loss
-
-    def drawer(self, X, y):
-        plt.scatter(X, y)
-        X = np.arange(-1, 24, 0.1)
-        y = self.predict(X)
-        plt.plot(X, y)
-        plt.show()
-
-    def train(self, X, y_true, steps, batch_size, learning_rate):
-        X = np.array(X)
-        y_true = np.array(y_true)
-
-        for i in range(steps):
-            index = np.random.randint(low=0, high=len(y_true), size=(batch_size))
-            # index = np.random.randint(low=0, high=len(y_true), size=(5))
-            X_train = X[index]
-            y_label = y_true[index]
-            y_pre = self.predict(X_train)
-            loss_ = np.mean((y_label - y_pre) ** 2)
-            self.losses.append(loss_)
-            if i % 100 == 0:
-                print("step:%d ; loss:%0.5f" % (i, loss_))
-
-            dcom = -2 * (y_label - y_pre)
-
-            dw = np.mean(dcom * np.sin(self.x_a * X_train + self.x_b)) * learning_rate
-            db = np.mean(dcom) * learning_rate
-
-            dx_a = np.mean(self.weight * dcom * np.cos(self.x_a * X_train + self.x_b) * X_train) * learning_rate
-            dx_b = np.mean(self.weight * dcom * np.cos(self.x_a * X_train + self.x_b)) * learning_rate
-
-            self.weight -= dw
-            self.bias -= db
-            self.x_a -= dx_a
-            self.x_b -= dx_b
-
-
-class Net:
-
-    def __init__(self):
-        self.weight_1 = 1.0
-        self.bias_1 = 1.0
-        self.weight_2 = 1.0
-        self.bias_2 = 1.0
-
-        self.losses = []
-
-    def sigmod(self, x):
-        return 1.0 / (1.0 + np.exp(-x))
-
-    def predict(self, x):
-        first = self.weight_1 * x + self.bias_1
-        return self.weight_2 * self.sigmod(first) + self.bias_2
-
-    def loss(self, X, y_true):
-        y_pre = self.predict(X)
-        loss = np.sum((y_true - y_pre) ** 2)
-        return loss
-
-    def drawer(self, X, y):
-        plt.scatter(X, y)
-        X = np.arange(-1, 24, 0.1)
-        y = self.predict(X)
-        plt.plot(X, y)
-        plt.show()
-
-    def train(self, X, y_true, steps, batch_size, learning_rate):
-        X = np.array(X)
-        y_true = np.array(y_true)
-
-        for i in range(steps):
-            index = np.random.randint(low=0, high=len(y_true), size=(batch_size))
-            # index = np.random.randint(low=0, high=len(y_true), size=(5))
-            X_train = X[index]
-            y_label = y_true[index]
-
-            first = self.weight_1 * X_train + self.bias_1
-            logist = self.sigmod(first)
-            y_pre = self.weight_2 * logist + self.bias_2
-
-            loss_ = np.mean((y_label - y_pre) ** 2)
-            self.losses.append(loss_)
-            if i % 100 == 0:
-                print("step:%d ; loss:%0.5f" % (i, loss_))
-
-            dcom = -2 * (y_label - y_pre)
-
-            dw2 = np.mean(dcom * logist) * learning_rate
-            db2 = np.mean(dcom) * learning_rate
-
-            dw1 = np.mean(dcom * logist * (1 - logist) * self.weight_2 * X_train) * learning_rate
-            db1 = np.mean(dcom * logist * (1 - logist) * self.weight_2) * learning_rate
-
-            self.weight_1 -= dw1
-            self.weight_2 -= dw2
-            self.bias_1 -= db1
-            self.bias_2 -= db2
 
 
 class Three:
@@ -272,7 +151,6 @@ class Three:
 
         for i in range(steps):
             index = np.random.randint(low=0, high=len(y_true), size=(batch_size))
-            # index = np.random.randint(low=0, high=len(y_true), size=(5))
             X_train = X[index]
             y_label = y_true[index]
 
@@ -300,8 +178,9 @@ class Stero:
 
         self.losses = []
 
-    def predict(self, x):
-        x = (x - np.mean(x)) / np.std(x)
+    def predict(self, x, isPre=False):
+        if isPre:
+            x = (x - np.mean(x)) / np.std(x)
         return self.alpha * (x ** 3) + self.beta * (x ** 2) + self.theta * x + self.bias
 
     def loss(self, X, y_true):
@@ -313,7 +192,7 @@ class Stero:
         plt.subplot(2, 1, 1)
         plt.scatter(X, y)
         X = np.arange(-1, 24, 0.1)
-        y = self.predict(X)
+        y = self.predict(X, isPre=True)
         plt.plot(X, y)
 
         plt.subplot(2, 1, 2)
@@ -323,13 +202,13 @@ class Stero:
     def train(self, X, y_true, steps, batch_size, learning_rate):
         X = np.array(X)
         y_true = np.array(y_true)
-
+        X = (X - np.mean(X)) / np.std(X)
         for i in range(steps):
             index = np.random.randint(low=0, high=len(y_true), size=(batch_size))
             # index = np.random.randint(low=0, high=len(y_true), size=(5))
             X_train = X[index]
             y_label = y_true[index]
-            X_train = (X_train - np.mean(X_train)) / np.std(X_train)
+            # X_train = (X_train - np.mean(X_train)) / np.std(X_train)
             y_pre = self.predict(X_train)
             if i % 100 == 0:
                 y_ = self.predict(X_train)
@@ -357,56 +236,6 @@ class lwlr:
     def __init__(self):
         self.weights = []
         self.predict_points = []
-
-    # def predict(self, testpoint, X, y):
-    #
-    #     X_ = np.array(X)
-    #     y = np.array(y)
-    #     X_ = X_
-    #     y = y
-    #     X = []
-    #     length = len(X_)
-    #
-    #     for i in range(length):
-    #         x_temp = X_[i]
-    #         y_temp = y[i]
-    #         X.append([x_temp, y_temp])
-    #     X = np.array(X)
-    #
-    #     weight = np.eye(length)
-    #     for j in range(length):
-    #         diff = testpoint - X[j]
-    #         weight[j, j] = np.exp(np.sum(diff ** 2) / (-2.0 * self.k ** 2))
-    #
-    #     # print(X.shape, weight.shape, y.shape)
-    #     xWx = np.dot(X.T, weight).dot(X)
-    #     xWy = np.dot(X.T, weight).dot(y)
-    #     try:
-    #         theta = np.linalg.inv(xWx).dot(xWy)
-    #     except np.linalg.LinAlgError:
-    #         return
-    #     print(theta)
-    #     self.predict_points.append(testpoint * theta)
-
-    # def predict(self, testpoint, featureArr, labelArr, k=1.0):
-    #     feature = np.mat(featureArr)
-    #     label = np.mat(labelArr).T
-    #     num_sample = np.size(label)  # 确定样本的个数
-    #
-    #     weight = np.mat(np.eye(num_sample))  # 初始化权重矩阵
-    #
-    #     # 确定权重
-    #     for i in range(num_sample):
-    #         diffMat = testpoint - feature[i, :]
-    #         weight[i, i] = np.exp((diffMat * diffMat.T) / (-2 * k ** 2))
-    #     xTwx = feature.T * weight * feature
-    #
-    #     if np.linalg.det(xTwx) == 0.0:
-    #         print("This matrix is singular, cannot do inverse")
-    #         return
-    #     theta = xTwx.I * feature.T * weight * label
-    #
-    #     return theta
 
     def predict(self, testpoint, X, y, k):
         X = np.array(X)

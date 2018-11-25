@@ -3,8 +3,6 @@ import os
 import matplotlib.pyplot as plt
 from models import OrdinaryLinear
 from models import Multinomial
-from models import Sin
-from models import Net
 from models import Three
 from models import Stero
 from models import lwlr
@@ -46,17 +44,6 @@ def multinomial(X, y_true):
     model.drawer(X, y_true)
 
 
-def sin(X, y_true):
-    model = Sin()
-    model.train(X, y_true, 500000, 20, 1e-3)
-    model.drawer(X, y_true)
-
-
-def net(X, y_true):
-    model = Net()
-    model.train(X, y_true, 500000, 10, 1e-5)
-    model.drawer(X, y_true)
-
 
 def three(X, y_true):
     model = Three()
@@ -66,7 +53,7 @@ def three(X, y_true):
 
 def stero(X, y_true):
     model = Stero()
-    model.train(X, y_true, 500000, 20, 1e-3)
+    model.train(X, y_true, 300000, 20, 1e-5)
     model.drawer(X, y_true)
 
 
@@ -76,11 +63,9 @@ def lw(X, y_true):
     for index in range(len(y_true)):
         point = X[index]
         # print(point)
-        theta = model.predict(point, X, y_true, 4)
+        theta = model.predict(point, X, y_true, 2)
         predict[index] = point * theta
     model.drawer(X, y_true, predict)
-
-
 
 
 if __name__ == "__main__":
@@ -94,9 +79,9 @@ if __name__ == "__main__":
     # sin(X, number_data)
     # net(X, number_data)
     # three(X, number_data)
-    # stero(X, number_data)
+    stero(X, number_data)
     # one = np.ones((len(X), 1))
     # # X = np.concatenate((one, X), axis=1)
     # number_data.flatten()
-    X += 1
-    lw(X, number_data)
+    # X += 1
+    # lw(X, number_data)
