@@ -63,7 +63,7 @@ def lw(X, y_true):
     for index in range(len(y_true)):
         point = X[index]
         # print(point)
-        theta = model.predict(point, X, y_true, 2)
+        theta = model.predict(point, X, y_true,5)
         predict[index] = point * theta
     model.drawer(X, y_true, predict)
 
@@ -79,9 +79,9 @@ if __name__ == "__main__":
     # sin(X, number_data)
     # net(X, number_data)
     # three(X, number_data)
-    stero(X, number_data)
+    # stero(X, number_data)
     # one = np.ones((len(X), 1))
     # # X = np.concatenate((one, X), axis=1)
     # number_data.flatten()
     # X += 1
-    # lw(X, number_data)
+    lw(X, number_data)

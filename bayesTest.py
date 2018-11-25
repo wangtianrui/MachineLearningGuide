@@ -39,7 +39,7 @@ def string_2_vec(string_list, words_vec):
             one_hot = (word == words_vec).astype(int)
             vec += one_hot
         vec_list.append(vec)
-    # print(vec_list)
+    print(vec_list)
     return vec_list
 
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     test_list = data_list[2]
 
     wordsVec = get_all_words_vec(train_list)
-    # print(train_list,"\n",wordsVec)
+    print(train_list,"\n",wordsVec)
     train_vec = string_2_vec(train_list, wordsVec)
 
     p0_vec, p1_vec, pstudy = train(train_vec, labels)
