@@ -52,6 +52,9 @@ def train(train_vec, label):
     """
     train_vec = np.array(train_vec)
     label = np.array(label)
+    # p0_vec = np.zeros(len(train_vec[0]))
+    # p1_vec = np.zeros(len(train_vec[0]))
+
     p0_vec = np.zeros(len(train_vec[0]))
     p1_vec = np.zeros(len(train_vec[0]))
 
@@ -64,19 +67,27 @@ def train(train_vec, label):
         if label[index] == 1:
             p1_vec += train_vec[index]
             p1_denominator += 1
-    p0_vec = p0_vec / p0_denominator
-    p1_vec = p1_vec / p1_denominator
+
+    p0_vec = (p0_vec / p0_denominator)
+    p1_vec = (p1_vec / p1_denominator)
     pStudy = np.sum(label) / len(label)
     return p0_vec, p1_vec, pStudy
 
 
 def predict(x_vec, p0_vec, p1_vec, pstudy):
-    p0 = np.mean(x_vec * p0_vec / (1 - pstudy))
-    p1 = np.mean(x_vec * p1_vec / (pstudy))
+    # p0 = np.sum(x_vec / p0_vec * (1 - pstudy))  #有些书上这里是乘法
+    # p1 = np.sum(x_vec / p1_vec * (pstudy))
+    for index in range(len(x_vec)):
+        if x_vec[index] == 0:
+            x_vec[index] = 10 ** 5
+    p0 = np.sum(p0_vec / (x_vec)) * (1 - pstudy)
+    p1 = np.sum(p1_vec / (x_vec)) * (pstudy)
     if p0 > p1:
         print("玩")
-    else:
+    elif p0 < p1:
         print("学习")
+    else:
+        print("玩与学习对等")
 
 
 if __name__ == "__main__":
